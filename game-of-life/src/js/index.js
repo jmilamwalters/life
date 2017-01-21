@@ -203,65 +203,78 @@
    *    as if by reproduction.
    */
   function tick(grid) {
-    let arr = []
-    // stateModule.changeState('changeMe');
-    // for every live cell (i.e., point) in our coordinate grid...
-    for (let i = 0; i < grid.length; i++) {
-      let point = [grid[i][0], grid[i][1]];
-      let neighbors = getNeighbors(grid[i][0], grid[i][1]);
-      let alive = extractDuplicates(grid, neighbors);
+    // debugger
+    setTimeout(() => {
 
-      // Handle cases of reproduction
-      // for all neighbors, living and dead
-      for (let i = 0; i < neighbors.length; i++) {
-        let neighboring = getNeighbors(neighbors[i][0], neighbors[i][1]);
-        let living = extractDuplicates(grid, neighboring);
-        if (living.length === 3) {
-          arr.push([neighbors[i][0], neighbors[i][1]]);
+      let arr = []
+      // stateModule.changeState('changeMe');
+      // for every live cell (i.e., point) in our coordinate grid...
+      for (let i = 0; i < grid.length; i++) {
+        let point = [grid[i][0], grid[i][1]];
+        let neighbors = getNeighbors(grid[i][0], grid[i][1]);
+        let alive = extractDuplicates(grid, neighbors);
+
+        // Handle cases of reproduction
+        // for all neighbors, living and dead
+        for (let i = 0; i < neighbors.length; i++) {
+          let neighboring = getNeighbors(neighbors[i][0], neighbors[i][1]);
+          let living = extractDuplicates(grid, neighboring);
+          if (living.length === 3) {
+            arr.push([neighbors[i][0], neighbors[i][1]]);
+          } else {
+            continue;
+          }
+        }
+
+        // Handle all other cases, i.e., next generation (i.e., 2/3),
+        // overpopulation (> 3), and underpopulation (< 2).
+        if (alive.length === 3) {
+          arr.push([grid[i][0], grid[i][1]]);
+          continue;
+        } else if (alive.length === 2) {
+          arr.push([grid[i][0], grid[i][1]]);
+          continue;
         } else {
           continue;
         }
       }
 
-      // Handle all other cases, i.e., next generation (i.e., 2/3),
-      // overpopulation (> 3), and underpopulation (< 2).
-      if (alive.length === 3) {
-        arr.push([grid[i][0], grid[i][1]]);
-        continue;
-      } else if (alive.length === 2) {
-        arr.push([grid[i][0], grid[i][1]]);
-        continue;
-      } else {
-        continue;
-      }
-    }
+      paint(resolveDuplicates(arr));
+      tick(resolveDuplicates(arr));
 
-    arr = resolveDuplicates(arr)
-    paint(arr);
-    // requestAnimationFrame(cb);
-
-    return tick(arr);
+    }, 70);
   }
 
   /*
    * Paint canvas using coordinates.
    **/
   function paint(coords) {
+    // debugger
     const c = document.getElementById('canvas');
     const ctx = c.getContext('2d');
     // clear previous state
-    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.clearRect(0, 0, 400, 400);
     for (let i = 0; i < coords.length; i++) {
-      ctx.fillRect(coords[i][0], coords[i][1], 1, 1)
+      // debugger
+      let x = coords[i][0];
+      let y = coords[i][1];
+      let w = 1;
+      ctx.fillRect(x * w, y * w, w, w);
     }
+
+    // requestAnimationFrame(function() {
+    //   tick(coords);
+    // });
+    // setTimeout(() => {
+    //   tick(coords);
+    // }, 70);
   }
 
   /*
    * Invoke life.
    **/
   (function() {
-    const grid = seedRandom(10, 10);
-    // const grid = seedBlinker(5);
-    tick(grid);
+    tick(seedRandom(50, 50));
+    // tick(seedBlinker(5));
   })();
 })();
