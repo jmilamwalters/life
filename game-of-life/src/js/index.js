@@ -1,32 +1,31 @@
 /*
  * Game of Life:
  **/
-(function() {
-
+;(function() {
   /*
    * Experimental: state module
    **/
-  let stateModule = (function () {
+  let stateModule = (function() {
     // private variable
-    let state;
+    let state
     // public object - returned at end of module
-    let pub = {};
+    let pub = {}
 
-    pub.changeState = function (newstate) {
-      state = newstate;
-    };
+    pub.changeState = function(newstate) {
+      state = newstate
+    }
 
     pub.getState = function() {
-      return state;
+      return state
     }
 
     // expose externally
-    return pub;
-  }());
+    return pub
+  })()
 
   function aggrNextGrid(grid, coll = []) {
-    const newGrid = _.concat(grid, coll);
-    return newGrid;
+    const newGrid = _.concat(grid, coll)
+    return newGrid
   }
 
   /*
@@ -37,40 +36,40 @@
    **/
   function zip(arrX, arrY) {
     const newArr = arrX.map((item, index) => {
-      return [item, arrY[index]];
-    });
+      return [item, arrY[index]]
+    })
 
-    return newArr;
+    return newArr
   }
 
   /*
    * Return new array mapping all values in collection q to each item in p.
    **/
   function mapAllToEach(p, q) {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < p.length; i++) {
       for (let k = 0; k < q.length; k++) {
-        arr.push([p[i], q[k]]);
+        arr.push([p[i], q[k]])
       }
     }
 
-    return arr;
+    return arr
   }
 
   /*
    * Return new array non-inclusive of sub-array p from collection q.
    **/
   function discardFromSet(p, q) {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < q.length; i++) {
       if (arraysEqual(p, q[i])) {
-        continue;
+        continue
       } else {
-        arr.push(q[i]);
+        arr.push(q[i])
       }
     }
 
-    return arr;
+    return arr
   }
 
   /*
@@ -81,13 +80,13 @@
    * x-y coordinate within two cells on a coordinate plane.
    **/
   function getReach(x, y) {
-    const arrX = [x - 2, x - 1, x, x + 1, x + 2];
-    const arrY = [y - 2, y - 1, y, y + 1, y + 2];
+    const arrX = [x - 2, x - 1, x, x + 1, x + 2]
+    const arrY = [y - 2, y - 1, y, y + 1, y + 2]
     // let coords = zip(arrX, arrY);
-    let coords = mapAllToEach(arrX, arrY);
-    coords = discardFromSet([x, y], coords);
+    let coords = mapAllToEach(arrX, arrY)
+    coords = discardFromSet([x, y], coords)
 
-    return coords;
+    return coords
   }
 
   /*
@@ -98,7 +97,7 @@
    * x-y coordinate on a coordinate plane.
    **/
   function getNeighbors(x, y) {
-    let arr = [];
+    let arr = []
     arr = [
       [x, y - 1],
       [x, y + 1],
@@ -108,41 +107,37 @@
       [x - 1, y],
       [x - 1, y + 1],
       [x - 1, y - 1],
-    ];
+    ]
 
-    return arr;
+    return arr
   }
 
   /*
    * Seed x-y coordinate plane with three adjacent, alive cells.
    **/
   function seedBlinker(n) {
-    const arr = [
-      [n - 1, n],
-      [n, n],
-      [n + 1, n],
-    ];
+    const arr = [[n - 1, n], [n, n], [n + 1, n]]
 
-    return arr;
+    return arr
   }
 
   /*
    * Seed grid at random.
    **/
   function seedRandom(rows, cols, odds = 0.5) {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < rows; i++) {
       for (let k = 0; k < cols; k++) {
-        const random = Math.random();
+        const random = Math.random()
         if (random > odds) {
-          arr.push([i, k]);
+          arr.push([i, k])
         } else {
-          continue;
+          continue
         }
       }
     }
 
-    return arr;
+    return arr
   }
 
   /*
@@ -150,10 +145,10 @@
    **/
   function arraysEqual(p, q) {
     for (let i = 0; i < p.length; ++i) {
-      if (p[i] !== q[i]) return false;
+      if (p[i] !== q[i]) return false
     }
 
-    return true;
+    return true
   }
 
   /*
@@ -162,35 +157,35 @@
    * @param {Array} q
    **/
   function extractDuplicates(p, q) {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < p.length; i++) {
       for (let k = 0; k < q.length; k++) {
         if (arraysEqual(p[i], q[k])) {
-          arr.push(p[i]);
+          arr.push(p[i])
         } else {
-          continue;
+          continue
         }
       }
     }
 
-    return arr;
+    return arr
   }
 
   /*
    * Returns a new array of unique items.
    **/
   function resolveDuplicates(arr) {
-    let hash = {}, result = [];
+    let hash = {},
+      result = []
     for (let i = 0; i < arr.length; ++i) {
       if (!hash.hasOwnProperty(arr[i])) {
-        hash[arr[i]] = true;
-        result.push(arr[i]);
+        hash[arr[i]] = true
+        result.push(arr[i])
       }
     }
 
-    return result;
+    return result
   }
-
 
   /*
    * 1. Any live cell with fewer than two live neighbours dies, as if caused by
@@ -207,50 +202,52 @@
     // stateModule.changeState('changeMe');
     // for every live cell (i.e., point) in our coordinate grid...
     for (let i = 0; i < grid.length; i++) {
-      let point = [grid[i][0], grid[i][1]];
-      let neighbors = getNeighbors(grid[i][0], grid[i][1]);
-      let alive = extractDuplicates(grid, neighbors);
+      let point = [grid[i][0], grid[i][1]]
+      let neighbors = getNeighbors(grid[i][0], grid[i][1])
+      let alive = extractDuplicates(grid, neighbors)
 
       // Handle cases of reproduction
       // for all neighbors, living and dead
       for (let i = 0; i < neighbors.length; i++) {
-        let neighboring = getNeighbors(neighbors[i][0], neighbors[i][1]);
-        let living = extractDuplicates(grid, neighboring);
+        let neighboring = getNeighbors(neighbors[i][0], neighbors[i][1])
+        let living = extractDuplicates(grid, neighboring)
         if (living.length === 3) {
-          arr.push([neighbors[i][0], neighbors[i][1]]);
+          arr.push([neighbors[i][0], neighbors[i][1]])
         } else {
-          continue;
+          continue
         }
       }
 
       // Handle all other cases, i.e., next generation (i.e., 2/3),
       // overpopulation (> 3), and underpopulation (< 2).
       if (alive.length === 3) {
-        arr.push([grid[i][0], grid[i][1]]);
-        continue;
+        arr.push([grid[i][0], grid[i][1]])
+        continue
       } else if (alive.length === 2) {
-        arr.push([grid[i][0], grid[i][1]]);
-        continue;
+        arr.push([grid[i][0], grid[i][1]])
+        continue
       } else {
-        continue;
+        continue
       }
     }
 
     arr = resolveDuplicates(arr)
-    paint(arr);
+    paint(arr)
     // requestAnimationFrame(cb);
 
-    return tick(arr);
+    setTimeout(() => {
+      tick(arr)
+    }, 100)
   }
 
   /*
    * Paint canvas using coordinates.
    **/
   function paint(coords) {
-    const c = document.getElementById('canvas');
-    const ctx = c.getContext('2d');
+    const c = document.getElementById('canvas')
+    const ctx = c.getContext('2d')
     // clear previous state
-    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.clearRect(0, 0, 500, 500)
     for (let i = 0; i < coords.length; i++) {
       ctx.fillRect(coords[i][0], coords[i][1], 1, 1)
     }
@@ -259,9 +256,9 @@
   /*
    * Invoke life.
    **/
-  (function() {
-    const grid = seedRandom(10, 10);
+  ;(function() {
+    const grid = seedRandom(50, 50)
     // const grid = seedBlinker(5);
-    tick(grid);
-  })();
-})();
+    return tick(grid)
+  })()
+})()
