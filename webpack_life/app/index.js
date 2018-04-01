@@ -17,23 +17,19 @@ import {
   without,
 } from 'ramda'
 
-// function neighbors(cell = ([x = 0, y = 0] = [])) {
-//   return without([cell], neighborhood(cell))
-// }
-
 function neighborhood([x = 0, y = 0] = []) {
-  return reduce(
-    range(x - 1, x + 2),
+  return R.reduce(
     (acc, dx) => concat(acc, map(range(y - 1, y + 2), dy => [dx, dy])),
-    []
+    [],
+    range(x - 1, x + 2)
   )
 }
 
 function consGrid(size = 1) {
-  return reduce(
-    range(size),
+  return R.reduce(
     (acc, x) => concat(acc, map(range(size), y => [x, y])),
-    []
+    [],
+    range(size)
   )
 }
 
@@ -62,23 +58,18 @@ function paint(arrIn = [], w = 10) {
  * sum sets the inner field to death.  
  **/
 function step(world = [], arrIn = []) {
-  const arrOut = reduce(
-    world,
+  const arrOut = R.reduce(
     (acc, curr) =>
       cond([
         [equals(3), always([curr, ...acc])],
         [equals(4), () => (contains(curr, arrIn) ? [curr, ...acc] : acc)],
         [T, always(acc)],
       ])(intersection(neighborhood(curr), arrIn).length),
-    []
+    [],
+    world
   )
   paint(arrOut)
   return setTimeout(() => step(world, arrOut), 250)
 }
 
-// ;(() => step(consGrid(25), seedRandom(25, 25)))()
-;(() => {
-  // const r = seedRandom(consGrid(5))
-  // debugger
-  step(consGrid(25), seedRandom(consGrid(25)))
-})()
+;(() => step(consGrid(25), seedRandom(consGrid(25))))()
