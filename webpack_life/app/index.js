@@ -19,17 +19,17 @@ import {
 
 function neighborhood([x = 0, y = 0] = []) {
   return R.reduce(
-    (acc, dx) => concat(acc, map(range(y - 1, y + 2), dy => [dx, dy])),
+    (acc, dx) => R.concat(acc, R.map(dy => [dx, dy], R.range(y - 1, y + 2))),
     [],
-    range(x - 1, x + 2)
+    R.range(x - 1, x + 2)
   )
 }
 
 function consGrid(size = 1) {
   return R.reduce(
-    (acc, x) => concat(acc, map(range(size), y => [x, y])),
+    (acc, x) => R.concat(acc, R.map(y => [x, y], R.range(0, size))),
     [],
-    range(size)
+    R.range(0, size)
   )
 }
 
