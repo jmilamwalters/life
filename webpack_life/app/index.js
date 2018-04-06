@@ -1,40 +1,46 @@
 import 'styles/index.scss'
-import _, {compact, concat, isEqual, map, range, reduce} from 'lodash'
-import * as R from 'ramda'
 import {
   always,
+  concat,
   cond,
   contains,
   equals,
   forEach,
   head,
-  inc,
   intersection,
-  // map,
+  map,
+  range,
+  reduce,
   T,
   tail,
-  when,
-  without,
 } from 'ramda'
 
+const measureTime = (name, func) => {
+  console.time(name)
+  const results = func()
+  console.timeEnd(name)
+
+  return results
+}
+
 function neighborhood([x = 0, y = 0] = []) {
-  return R.reduce(
-    (acc, dx) => R.concat(acc, R.map(dy => [dx, dy], R.range(y - 1, y + 2))),
+  return reduce(
+    (acc, dx) => concat(acc, map(dy => [dx, dy], range(y - 1, y + 2))),
     [],
-    R.range(x - 1, x + 2)
+    range(x - 1, x + 2)
   )
 }
 
 function consGrid(size = 1) {
-  return R.reduce(
-    (acc, x) => R.concat(acc, R.map(y => [x, y], R.range(0, size))),
+  return reduce(
+    (acc, x) => concat(acc, map(y => [x, y], range(0, size))),
     [],
-    R.range(0, size)
+    range(0, size)
   )
 }
 
 function seedRandom(grid = [], odds = 0.5) {
-  return R.reduce(
+  return reduce(
     (acc, [x, y]) => (Math.random() > odds ? [[x, y], ...acc] : acc),
     [],
     grid
@@ -50,15 +56,8 @@ function paint(arrIn = [], w = 10) {
   )
 }
 
-/* 
- * Implementation:
- * If the sum of all nine fields is 3, the inner field state for the next
- * generation will be life (no matter of its previous contents); if the
- * all-field sum is 4, the inner field retains its current state and every other
- * sum sets the inner field to death.  
- **/
 function step(world = [], arrIn = []) {
-  const arrOut = R.reduce(
+  const arrOut = reduce(
     (acc, curr) =>
       cond([
         [equals(3), always([curr, ...acc])],
@@ -69,7 +68,10 @@ function step(world = [], arrIn = []) {
     world
   )
   paint(arrOut)
-  return setTimeout(() => step(world, arrOut), 250)
+  // return requestAnimationFrame(() => step(world, arrOut))
+  return requestAnimationFrame(() =>
+    measureTime('step', () => step(world, arrOut))
+  )
 }
 
 ;(() => step(consGrid(25), seedRandom(consGrid(25))))()
