@@ -115,26 +115,11 @@ function seedGosperGlidingGun() {
   ]
 }
 
-// function paint(arrIn = [], w = 8) {
-//   const context = document.getElementById('canvas').getContext('2d')
-//   context.clearRect(0, 0, 1000, 1000)
-//   return forEach(
-//     cell => context.fillRect(head(cell) * w, tail(cell) * w, 1 * w, 1 * w),
-//     arrIn
-//   )
-// }
-
 function paint(arrIn = [], w = 8) {
-  // return forEach(
-  //   cell => context.fillRect(head(cell) * w, tail(cell) * w, 1 * w, 1 * w),
-  //   arrIn
-  // )
-
   const context = document.getElementById('canvas').getContext('2d')
   context.clearRect(0, 0, 1512, 1512)
   return forEach(
-    cell =>
-      context.drawImage(img, head(cell) * w, tail(cell) * w, 1 * w, 1 * w),
+    cell => context.fillRect(head(cell) * w, tail(cell) * w, 1 * w, 1 * w),
     arrIn
   )
 }
@@ -203,24 +188,8 @@ function step(arrIn = []) {
       reduce((acc, curr) => [...acc, ...neighborhood(curr)], [], arrIn)
     )
   )
-  paint(arrOut, 24)
+  paint(arrOut)
   return requestAnimationFrame(() => step(arrOut))
 }
 
-var img = new Image()
-// img.onload = function() {
-//   // context.drawImage(img, 0, 0, 8, 8)
-//   return step(seedGosperGlidingGun())
-// }
-// img.src = '../assets/images/small.gif'
-// img.src = '../assets/images/parrotwave7.gif'
-img.src = '../assets/images/parrot.gif'
-
-// ;(() => step(consGrid(25), seedRandom(consGrid(25))))()
-// ;(() => step(seedRandom(consGrid(25))))()
-;(() => {
-  img.onload = function() {
-    // context.drawImage(img, 0, 0, 8, 8)
-    return step(seedGosperGlidingGun())
-  }
-})()
+;(() => step(seedGosperGlidingGun()))()
