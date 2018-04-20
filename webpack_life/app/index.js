@@ -1,5 +1,5 @@
 import 'styles/index.scss'
-import {intersectionBy, isEqual} from 'lodash/fp'
+import _, {intersectionBy, isEqual} from 'lodash/fp'
 import {
   always,
   concat,
@@ -8,6 +8,7 @@ import {
   equals,
   forEach,
   head,
+  inc,
   intersection,
   map,
   range,
@@ -23,34 +24,6 @@ const measureTime = (name, func) => {
   console.timeEnd(name)
 
   return results
-}
-
-function neighborhood([x = 0, y = 0] = []) {
-  return reduce(
-    (acc, dx) => concat(acc, map(dy => [dx, dy], range(y - 1, y + 2))),
-    [],
-    range(x - 1, x + 2)
-  )
-}
-
-function neighbors(cell = ([x = 0, y = 0] = [])) {
-  return without([cell], neighborhood(cell))
-}
-
-function consGrid(size = 1) {
-  return reduce(
-    (acc, x) => concat(acc, map(y => [x, y], range(0, size))),
-    [],
-    range(0, size)
-  )
-}
-
-function seedRandom(grid = [], odds = 0.5) {
-  return reduce(
-    (acc, [x, y]) => (Math.random() > odds ? [[x, y], ...acc] : acc),
-    [],
-    grid
-  )
 }
 
 function seedGosperGlidingGun() {
@@ -115,6 +88,34 @@ function seedGosperGlidingGun() {
   ]
 }
 
+function neighborhood([x = 0, y = 0] = []) {
+  return reduce(
+    (acc, dx) => concat(acc, map(dy => [dx, dy], range(y - 1, y + 2))),
+    [],
+    range(x - 1, x + 2)
+  )
+}
+
+function neighbors(cell = ([x = 0, y = 0] = [])) {
+  return without([cell], neighborhood(cell))
+}
+
+function consGrid(size = 1) {
+  return reduce(
+    (acc, x) => concat(acc, map(y => [x, y], range(0, size))),
+    [],
+    range(0, size)
+  )
+}
+
+function seedRandom(grid = [], odds = 0.5) {
+  return reduce(
+    (acc, [x, y]) => (Math.random() > odds ? [[x, y], ...acc] : acc),
+    [],
+    grid
+  )
+}
+
 function paint(arrIn = [], w = 8) {
   const context = document.getElementById('canvas').getContext('2d')
   context.clearRect(0, 0, 1512, 1512)
@@ -138,6 +139,38 @@ function resolveDuplicates(arr = []) {
   return result
 }
 
+// function intersectionLength(arrOne = [], arrTwo = []) {
+//   let result = []
+//   for (let i = 0; i < arrOne.length; i++) {
+//     const [x1, y1] = arrOne[i]
+
+//     for (let j = 0; j < arrTwo.length; j++) {
+//       const [x2, y2] = arrTwo[j]
+
+//       if (x1 === x2 && y1 === y2) {
+//         result.push([x1, y1])
+//       }
+//     }
+//   }
+
+//   return result.length
+// }
+
+function intersectionLength(arrOne = [], arrTwo = []) {
+  return reduce(
+    (acc, [x1, y1]) =>
+      acc +
+      reduce(
+        (innerAcc, [x2, y2]) =>
+          x1 === x2 && y1 === y2 ? inc(innerAcc) : innerAcc,
+        0,
+        arrTwo
+      ),
+    0,
+    arrOne
+  )
+}
+
 // function step(world = [], arrIn = []) {
 //   const arrOut = reduce(
 //     (acc, curr) =>
@@ -156,24 +189,6 @@ function resolveDuplicates(arr = []) {
 //   )
 // }
 
-function intersectionLength(arrOne = [], arrTwo = []) {
-  let result = []
-  for (let i = 0; i < arrOne.length; i++) {
-    const [x1, y1] = arrOne[i]
-
-    for (let j = 0; j < arrTwo.length; j++) {
-      const [x2, y2] = arrTwo[j]
-
-      if (x1 === x2 && y1 === y2) {
-        result.push([x1, y1])
-      }
-    }
-  }
-
-  return result.length
-}
-
-// function step(world = [], arrIn = []) {
 function step(arrIn = []) {
   const arrOut = reduce(
     (acc, curr) =>
