@@ -10,6 +10,7 @@ import {
   head,
   inc,
   intersection,
+  last,
   map,
   range,
   reduce,
@@ -125,18 +126,46 @@ function paint(arrIn = [], w = 8) {
   )
 }
 
-function resolveDuplicates(arr = []) {
-  let hash = {}
-  let result = []
+// function unique(arr = []) {
+//   let hash = {}
+//   let result = []
 
-  for (let i = 0; i < arr.length; ++i) {
-    if (!hash.hasOwnProperty(arr[i])) {
-      hash[arr[i]] = true
-      result.push(arr[i])
-    }
-  }
+//   for (let i = 0; i < arr.length; ++i) {
+//     if (!hash.hasOwnProperty(arr[i])) {
+//       hash[arr[i]] = true
+//       result.push(arr[i])
+//     }
+//   }
 
-  return result
+//   return result
+// }
+
+// function unique(arr = []) {
+//   let hash = {}
+//   return reduce(
+//     (acc, val) => {
+//       if (!hash.hasOwnProperty(val)) {
+//         hash[val] = true
+//         return [...acc, val]
+//       }
+//       return acc
+//     },
+//     [],
+//     arr
+//   )
+// }
+
+function unique(arr = []) {
+  return last(
+    reduce(
+      (acc, val) =>
+        !head(acc).hasOwnProperty(val)
+          ? [{...head(acc), [val]: true}, [...last(acc), val]]
+          : acc,
+      [{}, []],
+      arr
+    )
+  )
 }
 
 // function intersectionLength(arrOne = [], arrTwo = []) {
@@ -199,9 +228,8 @@ function step(arrIn = []) {
         // ])(intersection(neighborhood(curr), arrIn).length),
       ])(intersectionLength(neighborhood(curr), arrIn)),
     [],
-    resolveDuplicates(
-      reduce((acc, curr) => [...acc, ...neighborhood(curr)], [], arrIn)
-    )
+    // uniq(reduce((acc, curr) => [...acc, ...neighborhood(curr)], [], arrIn))
+    unique(reduce((acc, curr) => [...acc, ...neighborhood(curr)], [], arrIn))
   )
   paint(arrOut)
   return requestAnimationFrame(() => step(arrOut))
